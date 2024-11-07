@@ -1,0 +1,7 @@
+GLFW/*
+GLEW/*
+*.exe
+*.sln
+*.vcxproj*
+x64/*
+.vs/*
