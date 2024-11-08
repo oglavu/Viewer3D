@@ -1,9 +1,14 @@
 #include <GL\glew.h>
 #include <GLFW\glfw3.h>
+#include "parser_test.hpp"
 #include <iostream>
 
 int main(void)
 {
+
+    parser_test();
+
+
     GLFWwindow* window;
 
     /* Initialize the library */

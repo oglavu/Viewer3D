@@ -5,3 +5,5 @@ GLEW/*
 *.vcxproj*
 x64/*
 .vs/*
+*.obj
+*.mtl
