@@ -54,7 +54,6 @@ Vector<N> Vector<N>::zero() {
 
 template <unsigned N>
 Vector<N>::Vector() {
-	zero();
 }
 
 template <unsigned N>

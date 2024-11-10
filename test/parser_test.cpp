@@ -4,8 +4,8 @@
 void parser_test() {
 
 
-	Object* obj = Parser::parseFile("./untitled.obj");
+	ObjectPtr obj = Parser::parseFile("./untitled.obj");
 
-	std::cout << *obj;
+	std::cout << *obj.get();
 
 }
