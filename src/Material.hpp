@@ -33,6 +33,8 @@ public:
 
 	void setIllumination(unsigned u);
 
+	friend std::ostream& operator << (std::ostream&, Material&);
+
 };
 
 typedef std::shared_ptr<Material> MaterialPtr;

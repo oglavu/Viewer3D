@@ -17,10 +17,10 @@ void Object::addGroup(GroupPtr vM) {
 }
 
 std::ostream& operator<<(std::ostream& stream, Face& f) {
-	stream << "Face: " << f.m_normalIndeces.size();
+	stream << "Face: ";
 	for (unsigned ix = 0; ix < f.m_vertexIndeces.size(); ix++) {
 		stream << f.m_vertexIndeces[ix] << "/" << 
-			f.m_normalIndeces[ix] << "/" << f.m_texCoordIndeces[ix] << "\n";
+			f.m_normalIndeces[ix] << "/" << f.m_texCoordIndeces[ix] << " ";
 	}
 
 	return stream << "\n";
@@ -32,6 +32,7 @@ std::ostream& operator<<(std::ostream& stream, Group& g) {
 	for (FacePtr e : g.m_faces) {
 		stream << *e.get();
 	}
+	stream << *g.m_material.get();
 	return stream << "\n";
 }
 

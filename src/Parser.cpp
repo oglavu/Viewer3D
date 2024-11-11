@@ -130,8 +130,36 @@ GroupPtr Parser::parseGroup(std::string materialName, std::vector<MaterialPtr>& 
 }
 
 FacePtr Parser::parseFace(std::stringstream& sstream, MaterialPtr pM) {
+	FacePtr pFace(new Face(pM));
 
+	// vertex format: v/t/n
+	// v: index of coord
+	// t: [optional] index of tex offset
+	// n: [optional] index of normal vector
+	std::string vertex;
 
+	while (!sstream.eof()) {
+		sstream >> vertex;
+		int params[3] = { 0, 0, 0 };
+
+		unsigned params_ix = 0;
+		std::string num;
+		for (unsigned ix = 0; ix < vertex.size(); ix++) {
+			if (vertex[ix] == '/') {
+				params[params_ix++] = std::stoi(num);
+				num = "";
+			} else {
+				num += std::string(1, vertex[ix]);
+			}				
+		}
+		params[params_ix] = std::stoi(num);
+		
+		pFace->addVertexIndex(params[0]);
+		pFace->addTexCoordIndex(params[1]);
+		pFace->addNormalIndex(params[2]);
+	}
+
+	return pFace;
 }
 
 Point3f Parser::parseVertex(std::stringstream& sstream) {
