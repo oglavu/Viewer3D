@@ -39,6 +39,8 @@ public:
 
 	Vector<N> normalize();
 
+	const float* raw_ptr() const;
+
 private:
 	float m_data[N];
 };
@@ -201,6 +203,11 @@ Vector<N> crossProduct(const Vector<N>& v1, const Vector<N>& v2) {
 
 	float data[] = { c0, c1, c2 };
 	return Vector(data);
+}
+
+template<unsigned N>
+const float* Vector<N>::raw_ptr() const {
+	return m_data;
 }
 
 

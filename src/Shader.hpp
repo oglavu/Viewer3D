@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
 class Shader {
 private:
@@ -18,3 +19,4 @@ public:
 
 };
 
+typedef std::shared_ptr<Shader> ShaderPtr;

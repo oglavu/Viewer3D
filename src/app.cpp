@@ -1,48 +1,35 @@
 #include <GL\glew.h>
 #include <GLFW\glfw3.h>
-#include "parser_test.hpp"
+#include "Object.hpp"
+#include "Parser.hpp"
+#include "Viewer.hpp"
 #include <iostream>
 
-int main(void)
-{
 
-    parser_test();
+int main(void) {
+    glfwInit();
+    GLFWwindow* window = glfwCreateWindow(640, 480, "Viewer3D", nullptr, nullptr);
+    glfwMakeContextCurrent(window);
+    glewInit();
+    glViewport(0, 0, 640, 480);
 
+    glfwSetCursorPosCallback(window, Viewer::cursorCallback);
+    glfwSetScrollCallback(window, Viewer::scrollCallback);
 
-    //GLFWwindow* window;
+    ObjectPtr object = Parser::parseFile("./resources/untitled.obj");
+    object->compile();
+    ShaderPtr shader (new Shader("./resources/simple_vertex.shader", "./resources/simple_fragment.shader"));
+    object->setShader(shader);
 
-    ///* Initialize the library */
-    //if (!glfwInit())
-    //    return -1;
+    while (!glfwWindowShouldClose(window)) {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    ///* Create a windowed mode window and its OpenGL context */
-    //window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
-    //if (!window)
-    //{
-    //    glfwTerminate();
-    //    return -1;
-    //}
+        object->render();
 
-    ///* Make the window's context current */
-    //glfwMakeContextCurrent(window);
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
 
-    //if (glewInit() != GLEW_OK) {
-    //    std::cout << "Error";
-    //}
-
-    ///* Loop until the user closes the window */
-    //while (!glfwWindowShouldClose(window))
-    //{
-    //    /* Render here */
-    //    glClear(GL_COLOR_BUFFER_BIT);
-
-    //    /* Swap front and back buffers */
-    //    glfwSwapBuffers(window);
-
-    //    /* Poll for and process events */
-    //    glfwPollEvents();
-    //}
-
-    //glfwTerminate();
+    glfwTerminate();
     return 0;
 }

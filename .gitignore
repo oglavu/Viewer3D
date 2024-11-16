@@ -1,9 +1,8 @@
 GLFW/*
 GLEW/*
+GLM/*
 *.exe
 *.sln
 *.vcxproj*
 x64/*
 .vs/*
-*.obj
-*.mtl

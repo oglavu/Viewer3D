@@ -1,5 +1,7 @@
 #include "Object.hpp"
 
+#include <GL/glew.h>
+
 void Object::addVertex(Point3f v) {
 	m_vertecies.push_back(v);
 }
@@ -14,6 +16,68 @@ void Object::addTexOffset(Point2f v) {
 
 void Object::addGroup(GroupPtr vM) {
 	m_groups.push_back(vM);
+}
+
+void Object::setShader(ShaderPtr s) {
+	m_shader = s;
+}
+
+void Object::compile() {
+	// only object knows its coords by value
+	glGenBuffers(1, &m_id);
+	glBindBuffer(GL_ARRAY_BUFFER, m_id);
+
+	unsigned count = m_vertecies.size();
+	float* positions = new float[3 * count];
+
+	for (unsigned ix = 0; ix < count; ix++) {
+		positions[3 * ix + 0] = m_vertecies[ix](0);
+		positions[3 * ix + 1] = m_vertecies[ix](1);
+		positions[3 * ix + 2] = m_vertecies[ix](2);
+	}
+
+	glBufferData(GL_ARRAY_BUFFER, 3*count * sizeof(unsigned), positions, GL_DYNAMIC_DRAW);
+
+	delete[] positions;
+	
+	for (unsigned i1 = 0; i1 < m_groups.size(); i1++) {
+		GroupPtr group = m_groups[i1]; glGenBuffers(1, &group->m_id);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, group->m_id);
+
+		for (unsigned i2 = 0; i2 < group->m_faces.size(); i2++) {
+			FacePtr face = group->m_faces[i2];
+
+			// all group has one or more faces (polygons)
+			unsigned count = face->m_vertexIndeces.size();
+			unsigned* indeces = new unsigned[count];
+
+			for (unsigned ix = 0; ix < count; ix++) {
+				indeces[ix] = face->m_vertexIndeces[ix];
+			}
+			
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned), indeces, GL_DYNAMIC_DRAW);
+			delete[] indeces;
+
+		}
+	}
+}
+
+void Object::render() {
+	if (!m_shader.get())
+		m_shader->use();
+
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, m_id);
+
+	for (unsigned ix = 0; ix < m_groups.size(); ix++) {
+		GroupPtr group = m_groups[ix];
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, group->m_id);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+		glDrawElements(GL_QUADS, 4, GL_UNSIGNED_INT, 0);
+	}
 }
 
 std::ostream& operator<<(std::ostream& stream, Face& f) {

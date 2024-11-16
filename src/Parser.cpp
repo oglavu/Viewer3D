@@ -42,8 +42,12 @@ ObjectPtr Parser::parseFile(const std::string fileName)
 		} else if (syntaxType == "mtllib") {
 			sstream >> line;
 
-			// TODO: iz std::vector prebaci u std::list ?
-			std::vector<MaterialPtr>* tmp = Parser::parseMTL(line);
+			unsigned lastOccurence = fileName.find_last_of("/\\");
+			if (lastOccurence == std::string::npos) {
+				throw new std::runtime_error("Invalid path to .mtl file \n");
+			}
+			std::string path = fileName.substr(0, lastOccurence);
+			std::vector<MaterialPtr>* tmp = Parser::parseMTL(path + std::string("/") + line);
 			materials.insert(materials.begin(), tmp->begin(), tmp->end());
 			delete tmp;
 		}
@@ -138,9 +142,11 @@ FacePtr Parser::parseFace(std::stringstream& sstream, MaterialPtr pM) {
 	// n: [optional] index of normal vector
 	std::string vertex;
 
+	unsigned vertexPerFace = 0;
 	while (!sstream.eof()) {
 		sstream >> vertex;
 		int params[3] = { 0, 0, 0 };
+		vertexPerFace++;
 
 		unsigned params_ix = 0;
 		std::string num;
@@ -158,6 +164,11 @@ FacePtr Parser::parseFace(std::stringstream& sstream, MaterialPtr pM) {
 		pFace->addTexCoordIndex(params[1]);
 		pFace->addNormalIndex(params[2]);
 	}
+
+	if (vertexPerFace > 4)
+		throw new std::runtime_error("Too many vertecies per face provided.");
+	if (vertexPerFace < 3)
+		throw new std::runtime_error("Too little vertecies per face provided.");
 
 	return pFace;
 }
