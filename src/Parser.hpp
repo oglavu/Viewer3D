@@ -5,6 +5,7 @@
 
 #include <string>
 #include <sstream>
+#include <glm/glm.hpp>
 
 
 class Parser {
@@ -18,11 +19,11 @@ private:
 	static std::vector<MaterialPtr>* parseMTL(const std::string fileName);
 
 	static GroupPtr parseGroup(std::string, std::vector<MaterialPtr>&);
-	static FacePtr parseFace(std::stringstream&, MaterialPtr);
+	static void parseFace(std::stringstream&, GroupPtr);
 
-	static Point3f parseVertex(std::stringstream&);
-	static Point3f parseNormal(std::stringstream&);
-	static Point2f parseTexOffset(std::stringstream&);
+	static glm::vec3 parseVertex(std::stringstream&);
+	static glm::vec3 parseNormal(std::stringstream&);
+	static glm::vec2 parseTexOffset(std::stringstream&);
 
 };
 

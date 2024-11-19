@@ -3,8 +3,7 @@
 #include <fstream>
 #include <iostream>
 
-ObjectPtr Parser::parseFile(const std::string fileName)
-{
+ObjectPtr Parser::parseFile(const std::string fileName) {
 	ObjectPtr object(new Object());
 	std::vector<MaterialPtr> materials;
 	GroupPtr group(nullptr);
@@ -32,7 +31,7 @@ ObjectPtr Parser::parseFile(const std::string fileName)
 		else if (syntaxType == "f") {
 			if (group.get() == nullptr)
 				throw new std::runtime_error("Face definition before material specification");
-			group->addFace(Parser::parseFace(sstream, group->getMaterial()));
+			Parser::parseFace(sstream, group);
 		} else if (syntaxType == "usemtl") {
 			if (group.get() != nullptr)
 				object->addGroup(group);
@@ -77,15 +76,15 @@ std::vector<MaterialPtr>* Parser::parseMTL(const std::string fileName) {
 
 		if (syntaxType == "Ka") {
 			sstream >> p[0] >> p[1] >> p[2];
-			material->setAmbientColor(p);
+			material->setAmbientColor(glm::vec3(p[0], p[1], p[2]));
 		}
 		else if (syntaxType == "Kd") {
 			sstream >> p[0] >> p[1] >> p[2];
-			material->setDiffuseColor(p);
+			material->setDiffuseColor(glm::vec3(p[0], p[1], p[2]));
 		}
 		else if (syntaxType == "Ks") {
 			sstream >> p[0] >> p[1] >> p[2];
-			material->setSpecularColor(p);
+			material->setSpecularColor(glm::vec3(p[0], p[1], p[2]));
 		}
 		else if (syntaxType == "Ns") {
 			sstream >> p[0];
@@ -133,8 +132,8 @@ GroupPtr Parser::parseGroup(std::string materialName, std::vector<MaterialPtr>& 
 	return group;
 }
 
-FacePtr Parser::parseFace(std::stringstream& sstream, MaterialPtr pM) {
-	FacePtr pFace(new Face(pM));
+void Parser::parseFace(std::stringstream& sstream, GroupPtr g) {
+	// parse and add to Group
 
 	// vertex format: v/t/n
 	// v: index of coord
@@ -145,7 +144,7 @@ FacePtr Parser::parseFace(std::stringstream& sstream, MaterialPtr pM) {
 	unsigned vertexPerFace = 0;
 	while (!sstream.eof()) {
 		sstream >> vertex;
-		int params[3] = { 0, 0, 0 };
+		unsigned params[3] = { 0, 0, 0 };
 		vertexPerFace++;
 
 		unsigned params_ix = 0;
@@ -160,44 +159,40 @@ FacePtr Parser::parseFace(std::stringstream& sstream, MaterialPtr pM) {
 		}
 		params[params_ix] = std::stoi(num);
 		
-		pFace->addVertexIndex(params[0]);
-		pFace->addTexCoordIndex(params[1]);
-		pFace->addNormalIndex(params[2]);
+		g->addVertexIndex(params[0] - 1);
+		g->addTexCoordIndex(params[1] - 1);
+		g->addNormalIndex(params[2] - 1);
 	}
 
 	if (vertexPerFace > 4)
 		throw new std::runtime_error("Too many vertecies per face provided.");
 	if (vertexPerFace < 3)
 		throw new std::runtime_error("Too little vertecies per face provided.");
-
-	return pFace;
 }
 
-Point3f Parser::parseVertex(std::stringstream& sstream) {
-	float point[3];
+glm::vec3 Parser::parseVertex(std::stringstream& sstream) {
+	glm::vec3 vector;
 
 	// breaks on whitespaces (newline, space...)
-	sstream >> point[0] >> point[1] >> point[2];
+	sstream >> vector.x >> vector.y >> vector.z;
 
-	return Point3f(point);
+	return vector;
 }
 
-Point3f Parser::parseNormal(std::stringstream& sstream) {
-	float vector[3];
+glm::vec3 Parser::parseNormal(std::stringstream& sstream) {
+	glm::vec3 vector;
 
 	// breaks on whitespaces (newline, space...)
-	sstream >> vector[0] >> vector[1] >> vector[2];
+	sstream >> vector.x >> vector.y >> vector.z;
 
-
-	return Point3f(vector);
+	return vector;
 }
 
-Point2f Parser::parseTexOffset(std::stringstream& sstream) {
-	float texture[2] {0.0, 0.0};
+glm::vec2 Parser::parseTexOffset(std::stringstream& sstream) {
+	glm::vec2 vector;
 
 	// breaks on whitespaces (newline, space...)
-	sstream >> texture[0] >> texture[1];
+	sstream >> vector.x >> vector.y;
 
-
-	return Point2f(texture);
+	return vector;
 }

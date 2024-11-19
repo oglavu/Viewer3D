@@ -2,15 +2,15 @@
 
 #include <string>
 #include <memory>
-#include "Point3f.hpp"
+#include <glm/glm.hpp>
 
 class Material {
 private:
 	std::string m_name;
 
-	Point3f m_ambientColor;
-	Point3f m_diffuseColor;
-	Point3f m_specularColor;
+	glm::vec3 m_ambientColor;
+	glm::vec3 m_diffuseColor;
+	glm::vec3 m_specularColor;
 
 	float m_specularFocus;
 	float m_opticalDensity;
@@ -23,9 +23,9 @@ public:
 
 	std::string getName() const;
 
-	void setAmbientColor(Point3f v);
-	void setDiffuseColor(Point3f v);
-	void setSpecularColor(Point3f v);
+	void setAmbientColor(glm::vec3 v);
+	void setDiffuseColor(glm::vec3 v);
+	void setSpecularColor(glm::vec3 v);
 
 	void setSpecularFocus(float f);
 	void setOpticalDensity(float f);
