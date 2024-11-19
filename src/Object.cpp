@@ -3,8 +3,7 @@
 #include <GL/glew.h>
 
 Object::Object() {
-	glGenBuffers(1, &m_vbo);
-	glGenVertexArrays(1, &m_vao);
+	
 }
 
 void Object::addVertex(glm::vec3 v) {
@@ -33,61 +32,63 @@ void Object::compile() {
 	glBindVertexArray(m_vao);
 
 	// -> Data
-	unsigned count = m_vertecies.size();
-	float* positions = new float[3 * count];
-
-	for (unsigned ix = 0; ix < count; ix++) {
-		positions[3 * ix + 0] = m_vertecies[ix].x;
-		positions[3 * ix + 1] = m_vertecies[ix].y;
-		positions[3 * ix + 2] = m_vertecies[ix].z;
-	}
-
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-	glBufferData(GL_ARRAY_BUFFER, 3 * count * sizeof(float), positions, GL_STATIC_DRAW);
-	delete[] positions;
-	
-	// -> Index
 	for (unsigned i1 = 0; i1 < m_groups.size(); i1++) {
 		GroupPtr group = m_groups[i1];
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, group->m_ebo);
+		glBindBuffer(GL_ARRAY_BUFFER, group->m_vbo);
 
 		unsigned count = group->m_vertexIndeces.size();
-		unsigned* indeces = group->m_vertexIndeces.data();
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned), indeces, GL_STATIC_DRAW);
+		float* attributes = new float[8 * count];
+		for (unsigned ix = 0; ix < count; ix++) {
+			unsigned index = group->m_vertexIndeces[ix];
+			attributes[8 * ix + 0] = m_vertecies[index].x;
+			attributes[8 * ix + 1] = m_vertecies[index].y;
+			attributes[8 * ix + 2] = m_vertecies[index].z;
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+			index = group->m_normalIndeces[ix];
+			attributes[8 * ix + 3] = m_normals[index].x;
+			attributes[8 * ix + 4] = m_normals[index].y;
+			attributes[8 * ix + 5] = m_normals[index].z;
+
+			index = group->m_texCoordIndeces[ix];
+			attributes[8 * ix + 6] = m_texCoordOffs[index].x;
+			attributes[8 * ix + 7] = m_texCoordOffs[index].y;
+		}
+
+		glBufferData(GL_ARRAY_BUFFER, 8 * count * sizeof(float), attributes, GL_STATIC_DRAW);
+
+		// -> Attribute [Set]
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 0);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+		glEnableVertexAttribArray(2);
+		glBindVertexArray(0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
-
-	// -> Attribute [Set]
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
-	glEnableVertexAttribArray(0);
-	glBindVertexArray(0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Object::render() {
+void Object::draw() {
 
 	if (!m_shader.get())
 		throw new std::runtime_error("No shader selected");
 	m_shader->use();
 
 	glBindVertexArray(m_vao);
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 
 	for (unsigned ix = 0; ix < m_groups.size(); ix++) {
 		GroupPtr group = m_groups[ix];
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, group->m_ebo);
+		glBindBuffer(GL_ARRAY_BUFFER, group->m_vbo);
 		
-		glDrawElements(GL_QUADS, group->m_vertexIndeces.size(), GL_UNSIGNED_INT, 0);
+		glDrawArrays(GL_QUADS, 0, group->m_vertexIndeces.size());
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
 	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 }
 
@@ -127,6 +128,7 @@ std::ostream& operator<<(std::ostream& stream, Object& obj) {
 }
 
 Group::Group(MaterialPtr m): m_material(m) {
+	glGenBuffers(1, &m_vbo);
 	glGenBuffers(1, &m_ebo);
 }
 

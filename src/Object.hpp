@@ -9,7 +9,7 @@
 // surfaces in Object that have the same Material are grouped in Group
 class Group {
 private:
-	unsigned m_ebo;
+	unsigned m_ebo, m_vbo;
 	MaterialPtr m_material;
 
 	std::vector<unsigned> m_vertexIndeces;
@@ -35,7 +35,7 @@ typedef std::shared_ptr<Group> GroupPtr;
 
 class Object {
 private:
-	unsigned m_vbo, m_vao;
+	unsigned m_vao;
 
 	std::vector<glm::vec3> m_vertecies;
 	std::vector<glm::vec3> m_normals;
@@ -56,7 +56,7 @@ public:
 	void setShader(ShaderPtr s);
 
 	void compile();
-	void render();
+	void draw();
 
 	friend std::ostream& operator << (std::ostream&, Object& obj);
 
