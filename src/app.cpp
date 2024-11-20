@@ -20,8 +20,8 @@ int main(void) {
     }
 
 
-    //glfwSetCursorPosCallback(window, Viewer::cursorCallback);
-    //glfwSetScrollCallback(window, Viewer::scrollCallback);
+    glfwSetCursorPosCallback(window, Viewer::cursorCallback);
+    glfwSetScrollCallback(window, Viewer::scrollCallback);
 
     ObjectPtr object = Parser::parseFile("./resources/untitled.obj");
     std::cout<<*object.get();
@@ -34,7 +34,7 @@ int main(void) {
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        object->render();
+        object->draw();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

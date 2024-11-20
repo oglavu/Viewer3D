@@ -79,26 +79,26 @@ void Shader::use() const {
 	glUseProgram(m_programId);
 }
 
-inline void Shader::uniform(const std::string name, const glm::mat4& mat) const {
+void Shader::uniform(const std::string name, const glm::mat4& mat) const {
 	glUniformMatrix4fv(glGetUniformLocation(m_programId, name.data()), 1, GL_FALSE, &mat[0][0]);
 }
 
-inline void Shader::uniform(const std::string name, const glm::mat3& mat) const {
+void Shader::uniform(const std::string name, const glm::mat3& mat) const {
 	glUniformMatrix3fv(glGetUniformLocation(m_programId, name.data()), 1, GL_FALSE, &mat[0][0]);
 }
 
-inline void Shader::uniform(const std::string name, const glm::vec3& value) const {
+void Shader::uniform(const std::string name, const glm::vec3& value) const {
 	glUniform3fv(glGetUniformLocation(m_programId, name.data()), 1, &value[0]);
 }
 
-inline void Shader::uniform(const std::string name, const glm::vec4& value) const {
+void Shader::uniform(const std::string name, const glm::vec4& value) const {
 	glUniform4fv(glGetUniformLocation(m_programId, name.data()), 1, &value[0]);
 }
 
-inline void Shader::uniform(const std::string name, int value) const {
+void Shader::uniform(const std::string name, int value) const {
 	glUniform1i(glGetUniformLocation(m_programId, name.data()), value);
 }
 
-inline void Shader::uniform(const std::string name, float value) const {
+void Shader::uniform(const std::string name, float value) const {
 	glUniform1f(glGetUniformLocation(m_programId, name.data()), value);
 }
