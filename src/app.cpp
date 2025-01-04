@@ -5,8 +5,11 @@
 #include "Viewer.hpp"
 #include <iostream>
 
-#include <parser_test.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
 
+#include "glm/glm.hpp"
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/io.hpp>
 
 static const unsigned WIDTH = 640, HEIGHT = 480;
 
@@ -19,7 +22,6 @@ int main(void) {
         std::cout << "Error";
     }
 
-
     glfwSetCursorPosCallback(window, Viewer::cursorCallback);
     glfwSetScrollCallback(window, Viewer::scrollCallback);
 
@@ -29,10 +31,24 @@ int main(void) {
     ShaderPtr shader (new Shader("./resources/simple_vertex.glsl", "./resources/simple_fragment.glsl"));
     object->setShader(shader);
 
-
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glm::mat4 model = glm::mat4(1);
+        glm::mat4 view = Viewer::getViewMatrix();
+        glm::mat4 projection = glm::perspective(Viewer::getFov(),
+            (float)WIDTH / HEIGHT, 0.1f, 100.0f);
+
+        shader->uniform("model", model);
+        shader->uniform("view", view);
+        shader->uniform("projection", projection);
+
+        glm::mat3 m = glm::transpose(glm::inverse(model));
+        shader->uniform("norm", m);
+
+        glm::vec3 eye = Viewer::getEye();
+        shader->uniform("eye", eye);
 
         object->draw();
 
