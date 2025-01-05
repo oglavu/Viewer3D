@@ -25,13 +25,21 @@ int main(void) {
     glfwSetCursorPosCallback(window, Viewer::cursorCallback);
     glfwSetScrollCallback(window, Viewer::scrollCallback);
 
-    ObjectPtr object = Parser::parseFile("./resources/untitled.obj");
-    std::cout<<*object.get();
-    object->compile();
-    ShaderPtr shader (new Shader("./resources/simple_vertex.glsl", "./resources/simple_fragment.glsl"));
+
+    ShaderPtr shader(new Shader("./resources/simple_vertex.glsl", "./resources/simple_fragment.glsl"));
+    ObjectPtr object = Parser::parseFile("./resources/ex1.obj");
+
     object->setShader(shader);
+    object->compile();
 
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

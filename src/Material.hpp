@@ -1,8 +1,12 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <memory>
 #include <glm/glm.hpp>
+
+#include "Shader.hpp"
+#include "Texture.h"
 
 class Material {
 private:
@@ -18,10 +22,15 @@ private:
 
 	unsigned m_illumination;
 
+	ShaderPtr m_shader;
+	std::vector<TexturePtr> m_textures;
+
 public:
 	explicit Material(std::string name);
 
 	std::string getName() const;
+
+	void addTexture(TexturePtr);
 
 	void setAmbientColor(glm::vec3 v);
 	void setDiffuseColor(glm::vec3 v);
@@ -32,6 +41,10 @@ public:
 	void setDissolveFactor(float f);
 
 	void setIllumination(unsigned u);
+
+	void setShader(ShaderPtr);
+
+	void use() const;
 
 	friend std::ostream& operator << (std::ostream&, Material&);
 

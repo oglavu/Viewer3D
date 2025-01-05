@@ -24,6 +24,9 @@ void Object::addGroup(GroupPtr vM) {
 
 void Object::setShader(ShaderPtr s) {
 	m_shader = s;
+	for (int i = 0; i < m_groups.size(); i++) {
+		m_groups[i]->getMaterial()->setShader(s);
+	}
 }
 
 void Object::compile() {
@@ -34,6 +37,8 @@ void Object::compile() {
 	// -> Data
 	for (unsigned i1 = 0; i1 < m_groups.size(); i1++) {
 		GroupPtr group = m_groups[i1];
+
+		group->getMaterial()->use();
 
 		glBindBuffer(GL_ARRAY_BUFFER, group->m_vbo);
 
@@ -133,7 +138,7 @@ Group::Group(MaterialPtr m): m_material(m) {
 }
 
 MaterialPtr Group::getMaterial() const {
-	return MaterialPtr();
+	return m_material;
 }
 
 void Group::addVertexIndex(unsigned u) {

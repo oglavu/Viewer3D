@@ -7,6 +7,10 @@ std::string Material::getName() const {
 	return m_name;
 }
 
+void Material::addTexture(TexturePtr t) {
+	m_textures.push_back(t);
+}
+
 void Material::setAmbientColor(glm::vec3 v) {
 	m_ambientColor = v;
 }
@@ -33,6 +37,16 @@ void Material::setDissolveFactor(float f) {
 
 void Material::setIllumination(unsigned u) {
 	m_illumination = u;
+}
+
+void Material::setShader(ShaderPtr s) {
+	m_shader = s;
+}
+
+void Material::use() const {
+	for (int i = 0; i < m_textures.size(); i++) {
+		m_textures[i]->bind(i);
+	}
 }
 
 std::ostream& operator<<(std::ostream& stream, Material& m) {

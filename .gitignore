@@ -1,6 +1,7 @@
 GLFW/*
 GLEW/*
 GLM/*
+STB/*
 *.exe
 *.sln
 *.vcxproj*

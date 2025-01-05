@@ -103,7 +103,9 @@ std::vector<MaterialPtr>* Parser::parseMTL(const std::string fileName) {
 			material->setIllumination(i);
 		}
 		else if (syntaxType == "map_Kd") {
-			// texture
+			sstream >> line;
+			TexturePtr t(new Texture(line));
+			material->addTexture(t);
 		}
 		else if (syntaxType == "newmtl") {
 			sstream >> line;
